@@ -47,7 +47,7 @@ export default function Todo({ navigation }) {
                         bg={"cyan.100"}
                         onPress={cek}>
                         <NB.Text>{date ? date.toDateString() : "Select date"}</NB.Text>
-                        <Dates isOpen={showDate} setIsOpen={setShowDate} />
+                        <Dates isOpen={showDate} setIsOpen={setShowDate} date={date} setDate={setDate} />
                     </NB.Button>
                     <NB.Select
                         w={20}

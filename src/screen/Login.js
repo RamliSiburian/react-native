@@ -1,4 +1,5 @@
 import React from "react";
+import { Axios } from "axios";
 import * as NB from 'native-base';
 import { StyleSheet } from "react-native";
 import { API } from "../../config/Api"
@@ -7,7 +8,8 @@ export default function Login({ navigation }) {
     // https://api.kontenbase.com/query/api/v1/54af6705-b5b4-4cc9-84a5-4c4228b0ece5/Users
 
     const cekData = async () => {
-        const response = await API.get("/users/");
+
+        const response = await API.get("/Users")
         console.log(response);
     }
 
@@ -47,8 +49,8 @@ export default function Login({ navigation }) {
                         />
                     </NB.InputGroup>
                     <NB.Button
-                        // onPress={() => navigation.navigate("Todo")}
-                        onPress={cekData}
+                        onPress={() => navigation.navigate("Todo")}
+                        // onPress={cekData}
                         bg={"red.400"}
                         marginTop={10}
                     >

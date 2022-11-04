@@ -19,12 +19,7 @@ export default function Dates(props) {
                     />
                 </NB.Modal.Body>
                 <NB.Modal.Footer>
-                    <NB.Button.Group space={2}>
-                        <NB.Button variant="ghost" colorScheme="blueGray" onPress={() => {
-                            props.setIsOpen(false);
-                        }}>
-                            Cancel
-                        </NB.Button>
+                    <NB.Button.Group>
                         <NB.Button onPress={() => {
                             props.setIsOpen(false);
                         }}>
