@@ -3,15 +3,46 @@ import { Axios } from "axios";
 import * as NB from 'native-base';
 import { StyleSheet } from "react-native";
 import { API } from "../../config/Api"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation }) {
     // https://api.kontenbase.com/query/api/v1/54af6705-b5b4-4cc9-84a5-4c4228b0ece5/Users
+    const [form, setForm] = React.useState("");
 
-    const cekData = async () => {
+    function handleOnChange(name, value) {
+        setForm({
+            ...form,
+            [name]: value,
+        });
+    };
 
-        const response = await API.get("/Users")
-        console.log(response);
-    }
+    const handleOnSubmit = async () => {
+        try {
+
+            const config = {
+                headers: {
+                    'Content-type': 'application/json',
+                },
+            };
+            const body = JSON.stringify(form);
+            const response = await API.post("/auth/login", body, config);
+
+            if (response) {
+                await AsyncStorage.setItem('token', response.data.token);
+                await AsyncStorage.setItem("user_id", response.data.user._id);
+            }
+
+            const token = await AsyncStorage.getItem('token');
+            if (token !== null) {
+                // alert(`Login berhasil`);
+                navigation.navigate("Todo")
+            }
+        } catch (error) {
+            // console.log(e);
+            alert("Email atau password salah");
+        }
+    };
+
 
     return (
         <NB.Box style={styles.container}>
@@ -31,6 +62,8 @@ export default function Login({ navigation }) {
                         marginBottom={3}
                     >
                         <NB.Input p={2} placeholder="Email" variant="underlined"
+                            value={form.email}
+                            onChangeText={(value) => handleOnChange('email', value)}
                             width={"100%"}
                             fontSize={"sm"}
                             bg={"cyan.100"}
@@ -40,6 +73,8 @@ export default function Login({ navigation }) {
                     </NB.InputGroup>
                     <NB.InputGroup>
                         <NB.Input p={2} placeholder="Password" variant="underlined"
+                            value={form.password}
+                            onChangeText={(value) => handleOnChange('password', value)}
                             type="password"
                             width={"100%"}
                             fontSize={"sm"}
@@ -49,8 +84,8 @@ export default function Login({ navigation }) {
                         />
                     </NB.InputGroup>
                     <NB.Button
-                        onPress={() => navigation.navigate("Todo")}
-                        // onPress={cekData}
+                        onPress={handleOnSubmit}
+                        // onPress={() => navigation.navigate("Todo")}
                         bg={"red.400"}
                         marginTop={10}
                     >

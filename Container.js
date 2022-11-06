@@ -27,7 +27,7 @@ const MyTab = () => {
                     let iconName
                     let colorName = color
 
-                    if (route.name === "Todo") {
+                    if (route.name === "List") {
                         iconName = focused ? "list-circle" : "list-circle-outline"
                     } else if (route.name === "AddList") {
                         iconName = focused ? "add" : "add-outline"
@@ -39,7 +39,7 @@ const MyTab = () => {
                 tabBarActiveTintColor: "red",
                 tabBarInactiveTintColor: "black"
             })}>
-            <tab.Screen name="Todo" component={Todo} options={{ headerShown: false }} />
+            <tab.Screen name="List" component={Todo} options={{ headerShown: false }} />
             <tab.Screen name="AddList" component={AddList} options={{ headerShown: false }} />
             <tab.Screen name="AddCategory" component={AddCategory} options={{ headerShown: false }} />
         </tab.Navigator>

@@ -1,8 +1,84 @@
 import * as React from 'react';
 import * as NB from 'native-base';
 import { StyleSheet } from 'react-native';
+import { API } from '../../config/Api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function AddList() {
+    const [dataCategory, setdataCategory] = React.useState([]);
+    const [list, setList] = React.useState({
+        name: "",
+        category: "",
+        date: "",
+        desc: "",
+        status: "",
+    });
+
+    const getCategory = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            const user_id = await AsyncStorage.getItem("user_id");
+            // setList({
+            //     user_id,
+            //     status: "pending"
+            // })
+            if (token === null) {
+                navigation.navigate("Login");
+            }
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+            };
+            const response = await API.get('/category', config);
+            setdataCategory(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+
+    function handleChange(name, value) {
+        setList({
+            ...list,
+            [name]: value,
+        });
+    }
+    const handleSubmit = (async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                Navigation.navigate("LoginPage");
+            }
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + token
+                },
+            };
+            console.log(config);
+            const response = await API.post(`/list`, list, config);
+            setList({
+                name: "",
+                category: "",
+                date: "",
+                desc: "",
+                status: "",
+            })
+            alert(`list berhasil ditambahkan`);
+        } catch (error) {
+            // console.log(error);
+            alert("Gagal mendaftar kategori");
+        }
+    });
+
+    React.useEffect(() => {
+        getCategory();
+    }, []);
+
     return (
         <NB.Box style={styles.container}>
             <NB.Text
@@ -13,6 +89,8 @@ export default function AddList() {
             <NB.FormControl marginTop={5}>
                 <NB.InputGroup>
                     <NB.Input
+                        value={list.name}
+                        onChangeText={(value) => handleChange("name", value)}
                         _light={{
                             placeholderTextColor: "trueGray.700",
                             bg: "cyan.100",
@@ -30,14 +108,20 @@ export default function AddList() {
                 </NB.InputGroup>
                 <NB.InputGroup marginTop={3}>
                     <NB.Select
+                        onValueChange={(value) => handleChange("category", value)}
+                        _selectedItem={{
+                            bg: "green.600",
+                            endIcon: <NB.CheckIcon size={5} />,
+                        }}
                         minWidth={"100%"}
                         bg={"cyan.100"}
                         borderRadius={5}
                         accessibilityLabel="Category" placeholder="Category">
-                        <NB.Select.Item label="Study" value="study" />
-                        <NB.Select.Item label="Homework" value="homework" />
-                        <NB.Select.Item label="workout" value="workout" />
+                        {dataCategory?.map((item) => (
+                            <NB.Select.Item label={item?.category} value={item?.category} />
+                        ))}
                     </NB.Select>
+
                 </NB.InputGroup>
                 <NB.InputGroup marginTop={3}>
                     <NB.Input
@@ -49,7 +133,8 @@ export default function AddList() {
                             }
                         }}
                         p={2} placeholder="Choose Date" variant="underlined"
-                        type="date"
+                        value={list.date}
+                        onChangeText={(value) => handleChange("date", value)}
                         width={"100%"}
                         fontSize={"sm"}
                         bg={"cyan.100"}
@@ -58,6 +143,9 @@ export default function AddList() {
                     />
                 </NB.InputGroup>
                 <NB.TextArea
+                    value={list.desc}
+                    name="desc"
+                    onChangeText={(value) => handleChange("desc", value)}
                     marginTop={3}
                     shadow={2} h={20}
                     placeholder="Text Area Placeholder"
@@ -68,8 +156,28 @@ export default function AddList() {
                         _focus: {
                             bg: "coolGray.100"
                         }
-                    }} />;
+                    }} />
+                <NB.InputGroup
+                    marginTop={3}
+                >
+                    <NB.Input
+                        _light={{
+                            placeholderTextColor: "trueGray.700",
+                            bg: "cyan.100",
+                            _focus: {
+                                bg: "coolGray.100"
+                            }
+                        }}
+                        p={2} placeholder="Status" variant="underlined"
+                        width={"100%"}
+                        fontSize={"sm"}
+                        bg={"cyan.100"}
+                        color={"black"}
+                        borderRadius={5}
+                    />
+                </NB.InputGroup>
                 <NB.Button
+                    onPress={handleSubmit}
                     bg={"red.400"}
                     marginTop={10}
                 >

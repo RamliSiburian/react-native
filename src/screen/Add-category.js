@@ -1,8 +1,75 @@
 import * as React from 'react';
 import * as NB from 'native-base';
 import { StyleSheet } from 'react-native';
+import { API } from '../../config/Api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function AddCategory() {
+export default function AddCategory({ navigation }) {
+    const [form, setForm] = React.useState({ category: "" });
+    const [dataCategory, setdataCategory] = React.useState()
+
+    const handleOnChange = (name, value) => {
+        setForm({
+            [name]: value,
+        })
+    }
+
+    const handleOnSubmit = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+
+            if (!token) {
+                navigation.navigate("Login");
+            }
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + token
+                },
+            };
+            const response = await API.post("/category", form, config)
+            alert("insert data berhasil")
+            setForm({ category: "" })
+            getCategory()
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getCategory = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const user_id = await AsyncStorage.getItem('user_id');
+            if (token === null) {
+                navigation.navigate("Login")
+            }
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + token
+                },
+            };
+            const response = await API.get('/category', config);
+            setdataCategory(response.data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    React.useEffect(() => {
+        getCategory()
+    }, [])
+
+    const _dataCategoryRender = ({ item }) => {
+        return (
+            <NB.View p={2} bg={"red.500"} color={"white"} rounded={10} minWidth={70} marginRight={3} marginBottom={3} style={styles.list}>
+                <NB.Text bold style={{ color: "white" }}>
+                    {item.category}</NB.Text>
+            </NB.View>
+        );
+    };
+
     return (
         <NB.Box style={styles.container}>
             <NB.Text
@@ -21,6 +88,8 @@ export default function AddCategory() {
                             }
                         }}
                         p={2} placeholder="Name" variant="underlined"
+                        onChangeText={(value) => handleOnChange('category', value)}
+                        value={form.category}
                         width={"100%"}
                         fontSize={"sm"}
                         bg={"cyan.100"}
@@ -29,6 +98,7 @@ export default function AddCategory() {
                     />
                 </NB.InputGroup>
                 <NB.Button
+                    onPress={handleOnSubmit}
                     bg={"red.400"}
                     marginTop={7}
                 >
@@ -45,6 +115,15 @@ export default function AddCategory() {
                 fontSize={"2xl"}
                 fontWeight={"bold"}
             >List Category</NB.Text>
+            <NB.Box marginTop={5} style={styles.lists}>
+
+                <NB.FlatList
+                    numColumns={3}
+                    data={dataCategory}
+                    renderItem={_dataCategoryRender}
+                    keyExtractor={(item) => item}
+                />
+            </NB.Box>
         </NB.Box>
     )
 }
@@ -57,4 +136,13 @@ const styles = StyleSheet.create({
         height: "100%",
         padding: 25,
     },
+    list: {
+        display: "flex",
+        textAlign: "center",
+        flexWrap: "wrap"
+    },
+    lists: {
+        display: "flex",
+        flexWrap: "wrap"
+    }
 })

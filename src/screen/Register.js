@@ -1,9 +1,33 @@
 import * as React from 'react';
 import * as NB from 'native-base';
 import { StyleSheet } from 'react-native';
+import { API } from '../../config/Api';
 
 export default function Register({ navigation }) {
-    return (
+    const [form, setForm] = React.useState({
+        email: '',
+        firstName: '',
+        password: '',
+    });
+
+    const handleOnChange = (name, value) => {
+        setForm({
+            ...form,
+            [name]: value,
+        })
+    }
+
+    const handleOnSubmit = async () => {
+        try {
+            const response = await API.post("/auth/register", form)
+            // console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    return ( 
         <NB.Box style={styles.container}>
             <NB.Image
                 marginTop={10}
@@ -18,6 +42,8 @@ export default function Register({ navigation }) {
             <NB.FormControl>
                 <NB.InputGroup marginTop={6} marginBottom={3}>
                     <NB.Input p={2} placeholder="email" variant="underlined"
+                        value={form.email}
+                        onChangeText={(value) => handleOnChange('email', value)}
                         width={"100%"}
                         fontSize={"sm"}
                         bg={"cyan.100"}
@@ -27,6 +53,8 @@ export default function Register({ navigation }) {
                 </NB.InputGroup>
                 <NB.InputGroup marginBottom={3}>
                     <NB.Input p={2} placeholder="Name" variant="underlined"
+                        value={form.firstName}
+                        onChangeText={(value) => handleOnChange('firstName', value)}
                         width={"100%"}
                         fontSize={"sm"}
                         bg={"cyan.100"}
@@ -36,6 +64,8 @@ export default function Register({ navigation }) {
                 </NB.InputGroup>
                 <NB.InputGroup marginBottom={3}>
                     <NB.Input p={2} placeholder="Password" variant="underlined"
+                        value={form.password}
+                        onChangeText={(value) => handleOnChange('password', value)}
                         type="password"
                         width={"100%"}
                         fontSize={"sm"}
@@ -47,6 +77,7 @@ export default function Register({ navigation }) {
                 <NB.Button
                     bg={"red.400"}
                     marginTop={10}
+                    onPress={handleOnSubmit}
                 >
                     <NB.Text
                         fontSize={"xl"}
