@@ -2,10 +2,12 @@ import * as React from 'react';
 import * as NB from 'native-base';
 import { StyleSheet } from 'react-native';
 import { API } from '../../config/Api';
+import Dates from '../../modals/Date-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 export default function AddList() {
+    const [date, setDate] = React.useState();
+    const [showDate, setShowDate] = React.useState(false);
     const [dataCategory, setdataCategory] = React.useState([]);
     const [list, setList] = React.useState({
         name: "",
@@ -14,6 +16,13 @@ export default function AddList() {
         desc: "",
         status: "",
     });
+
+
+    function cek() {
+        setShowDate(true)
+        // alert(showDate)
+    }
+
 
     const getCategory = async () => {
         try {
@@ -77,7 +86,13 @@ export default function AddList() {
 
     React.useEffect(() => {
         getCategory();
-    }, []);
+        if (date) {
+            setList({
+                ...list,
+                date
+            })
+        }
+    }, [date]);
 
     return (
         <NB.Box style={styles.container}>
@@ -124,7 +139,7 @@ export default function AddList() {
 
                 </NB.InputGroup>
                 <NB.InputGroup marginTop={3}>
-                    <NB.Input
+                    {/* <NB.Input
                         _light={{
                             placeholderTextColor: "trueGray.700",
                             bg: "cyan.100",
@@ -140,7 +155,13 @@ export default function AddList() {
                         bg={"cyan.100"}
                         color={"black"}
                         borderRadius={5}
-                    />
+                    /> */}
+                    <NB.Button
+                        bg={"cyan.100"}
+                        onPress={cek}>
+                        <NB.Text>{date ? date.toDateString() : "Select date"}</NB.Text>
+                        <Dates isOpen={showDate} setIsOpen={setShowDate} date={date} setDate={setDate} />
+                    </NB.Button>
                 </NB.InputGroup>
                 <NB.TextArea
                     value={list.desc}

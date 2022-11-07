@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as NB from 'native-base';
 import { StyleSheet } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
-// import Dates from '../../modals/Date-picker';
+import Dates from '../../modals/Date-picker';
 import { API } from '../../config/Api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from "@react-navigation/native";
@@ -116,7 +116,7 @@ export default function Todo({ navigation }) {
                         bg={"cyan.100"}
                         onPress={cek}>
                         <NB.Text>{date ? date.toDateString() : "Select date"}</NB.Text>
-                        {/* <Dates isOpen={showDate} setIsOpen={setShowDate} date={date} setDate={setDate} /> */}
+                        <Dates isOpen={showDate} setIsOpen={setShowDate} date={date} setDate={setDate} />
                     </NB.Button>
                     <NB.Select
                         w={20}
@@ -134,7 +134,7 @@ export default function Todo({ navigation }) {
                         placeholder="Choose Service" >
                         <NB.Select.Item label="status" value="" />
                         <NB.Select.Item label="Backend Development" value="backend" />
-                    </NB.Select>
+                    </NB.Select> 
                 </NB.HStack>
             </NB.FormControl>
             <NB.ScrollView
